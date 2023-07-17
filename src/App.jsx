@@ -43,6 +43,8 @@ function App() {
         const newWinner = checkWinner(newBoard);
         if(newWinner){
             setWinner(newWinner)
+        } else if (checkDraw(newBoard)) {
+            setWinner(false)
         }
     }
     const checkWinner = (boardToCheck) => {
@@ -57,6 +59,10 @@ function App() {
             }
         }
         return null;
+    }
+
+    const checkDraw = (newBoard) => {
+        return newBoard.every( v => v != null)
     }
     const resetApp = () =>{
         setBoard(Array(9).fill(null));
