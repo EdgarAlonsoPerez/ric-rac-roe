@@ -1,35 +1,88 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useState } from 'react';
+
+const TURNS = {
+    x: 'X' ,
+    o: 'O'
+}
+const WINNER_SEQUENCES = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+]
+const Square = ( ({children, isSelected, updateBoard, index }) => {
+    const className = `square ${isSelected ? 'is-selected' : '' }`;
+    const handleClick = () => {
+        updateBoard(index)
+    }
+    return (
+        <div className={ className } onClick={handleClick}>
+            {children}
+        </div>
+    )
+})
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [board, setBoard] = useState(Array(9).fill(null))
+    const [turn, setTurn] = useState(TURNS.x)
+    const [winner, setWinner] = useState(null)
+    const updateBoard = (index) => {
+        if (board[index] || winner) {
+            return
+        }
+        const newBoard = [...board]
+        newBoard[index] =  turn;
+        setBoard(newBoard)
+        const newTurn = turn === TURNS.x ? TURNS.o : TURNS.x
+        setTurn(newTurn);
+        const newWinner = checkWinner(newBoard);
+        if(newWinner){
+            setWinner(newWinner)
+        }
+    }
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    const checkWinner = (boardToCheck) => {
+        for (const sequence of WINNER_SEQUENCES) {
+            const [a,b,c] = sequence;
+            if(
+                boardToCheck[a] &&
+                boardToCheck[a] === boardToCheck[b] &&
+                boardToCheck[b] === boardToCheck[c]
+            ) {
+                return boardToCheck[a]
+            }
+        }
+        return null;
+    }
+
+    return <>
+        <main className='board'>
+            <section className='game'>
+                {
+                    board.map( (_,i) => {
+                        return (
+                            <Square
+                                key={i}
+                                index={i}
+                                updateBoard={updateBoard}
+                            >
+                                {board[i]}
+                            </Square>
+                        )
+                    })
+                }
+            </section>
+            <section className='turn'>
+                <Square isSelected={ turn === TURNS.x }> { TURNS.x } </Square>
+                <Square isSelected={ turn === TURNS.o }> { TURNS.o } </Square>
+            </section>
+        </main>
     </>
-  )
 }
 
 export default App
