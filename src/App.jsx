@@ -45,7 +45,6 @@ function App() {
             setWinner(newWinner)
         }
     }
-
     const checkWinner = (boardToCheck) => {
         for (const sequence of WINNER_SEQUENCES) {
             const [a,b,c] = sequence;
@@ -59,9 +58,17 @@ function App() {
         }
         return null;
     }
-
+    const resetApp = () =>{
+        setBoard(Array(9).fill(null));
+        setTurn(TURNS.x);
+        setWinner(null)
+    }
     return <>
         <main className='board'>
+            <h1>
+                TIC TAC TOE WITH REACT
+            </h1>
+            <button onClick={resetApp}>Reset game</button>
             <section className='game'>
                 {
                     board.map( (_,i) => {
@@ -77,10 +84,31 @@ function App() {
                     })
                 }
             </section>
+
             <section className='turn'>
                 <Square isSelected={ turn === TURNS.x }> { TURNS.x } </Square>
                 <Square isSelected={ turn === TURNS.o }> { TURNS.o } </Square>
             </section>
+
+            {
+                winner != null &&  (
+                    <section className='winner'>
+                        <div className='text'>
+                             <h2>
+                                 {winner == false? 'Empate' : 'Ganó'}
+                             </h2>
+
+                            <header className='win'>
+                                {winner && <Square>{winner}</Square>}
+                            </header>
+
+                            <footer>
+                                <button onClick={resetApp} >Empezar de nuevo</button>
+                            </footer>
+                        </div>
+                    </section>
+                )
+            }
         </main>
     </>
 }
